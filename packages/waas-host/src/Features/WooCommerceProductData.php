@@ -70,16 +70,12 @@ class WooCommerceProductData
         <div id="<?php echo self::WPCS_PRODUCT_DATA_TAB_TARGET; ?>" class="panel woocommerce_options_panel">
             <div>
                 <?php
-                // \woocommerce_wp_select([
-                //     'id'            => WPCSProduct::WPCS_PRODUCT_TYPE_META,
-                //     'label'         => __( 'Type', WPCS_WAAS_HOST_TEXTDOMAIN),
-                //     'description'   => __( 'The type of this product, it\'s self explanatory really..', WPCS_WAAS_HOST_TEXTDOMAIN),
-                //     'options'  		=> [
-                //         WPCSProduct::WPCS_PRODUCT_TYPE_BASE_PRODUCT => __('Base product', WPCS_WAAS_HOST_TEXTDOMAIN),
-                //         WPCSProduct::WPCS_PRODUCT_TYPE_ADDON => __('Add-on', WPCS_WAAS_HOST_TEXTDOMAIN),
-                //     ],
-                //     'desc_tip'    	=> false,
-                // ]);
+                \woocommerce_wp_checkbox([
+                    'id'            => WPCSProduct::WPCS_PRODUCT_TYPE_META,
+                    'label'         => __( 'Is Add-on', WPCS_WAAS_HOST_TEXTDOMAIN),
+                    'description'   => __( 'Whether this product is an add-on to a different subscription', WPCS_WAAS_HOST_TEXTDOMAIN),
+                    'cbvalue'       => WPCSProduct::WPCS_PRODUCT_TYPE_ADDON,
+                ]);
                 ?>
             </div>
             <div>
@@ -121,6 +117,8 @@ class WooCommerceProductData
 
         if (array_key_exists(WPCSProduct::WPCS_PRODUCT_TYPE_META, $_POST)) {
             $product->store_type($_POST[WPCSProduct::WPCS_PRODUCT_TYPE_META]);
+        } else {
+            $product->store_type(WPCSProduct::WPCS_PRODUCT_TYPE_BASE_PRODUCT);
         }
 
         if (array_key_exists(WPCSProduct::WPCS_PRODUCT_GROUPNAME_META, $_POST)) {

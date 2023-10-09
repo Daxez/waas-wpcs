@@ -36,7 +36,13 @@ class WPCSProduct
             true,
         );
 
-        return $meta_value === 'yes';
+        $type_meta_value = get_post_meta(
+            $this->post_id,
+            self::WPCS_PRODUCT_TYPE_META,
+            true,
+        );
+
+        return $meta_value === 'yes' && $type_meta_value !== self::WPCS_PRODUCT_TYPE_ADDON;
     }
 
     public static function get_wpcs_product_meta_query()

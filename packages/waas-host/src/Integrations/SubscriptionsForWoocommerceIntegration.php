@@ -2,8 +2,10 @@
 
 namespace WaaSHost\Integrations;
 
+use Error;
 use WaaSHost\Core\WPCSTenant;
 use WaaSHost\Features\SingleLoginService;
+use WaaSHost\Core\WPCSProduct;
 
 class SubscriptionsForWoocommerceIntegration
 {
@@ -23,7 +25,26 @@ class SubscriptionsForWoocommerceIntegration
             add_filter('wps_sfw_subscription_details_html', [__CLASS__, 'show_tenant_status'], 10, 1);
             add_filter('wps_sfw_subscription_details_html', [__CLASS__, 'show_login_link'], 10, 1);
             add_filter('wpcs_subscription_details_url', [__CLASS__, 'get_subscription_detail_page'], 10, 2);
+            add_action('woocommerce_new_order_item', [__CLASS__, 'je_moer'], 10, 3);
         }
+    }
+
+    public static function je_moer($item_id, $item, $order_id)
+    {
+        $order = new \WC_Order($order_id);
+
+        $substatus = get_post_meta($order_id, 'wps_subscription_status', true);
+        if ($substatus !== "active") {
+            return;
+        }
+
+        $order_items = $order->get_items();
+        $subscription_roles = [];
+        foreach ($order_items as $order_Item) {
+            $product_user_role = get_post_meta($order_Item->get_product_id(), WPCSProduct::WPCS_PRODUCT_ROLE_META, true);
+            $subscription_roles[] = $product_user_role;
+        }
+        do_action('wpcs_tenant_roles_changed', $order_id, $subscription_roles);
     }
 
     public static function create_tenant_when_subscription_created($order_id, $subscription_id)
@@ -49,7 +70,8 @@ class SubscriptionsForWoocommerceIntegration
         return $order->get_billing_email();
     }
 
-    public static function subscription_id_to_customer_id($value, $subscription_id) {
+    public static function subscription_id_to_customer_id($value, $subscription_id)
+    {
         $order = new \WC_Order($subscription_id);
         $parent_order = new \WC_Order($order->get_parent_id());
         return $parent_order->get_customer_id();
@@ -70,14 +92,30 @@ class SubscriptionsForWoocommerceIntegration
             <td>Website status</td>
             <td><?php echo $tenant->get_status(); ?></td>
         </tr>
-    <?php
+        <?php
     }
 
     public static function show_login_link($subscription_id)
     {
+        $tenant = new WPCSTenant($subscription_id);
+        $tenant_status = $tenant->get_status();
+
+        if ($tenant_status != WPCSTenant::READY) {
+
+        ?>
+            <tr>
+                <td colspan="2">
+                    <p><?php __("A direct login link to your site will be shown here once your site is ready!", WPCS_WAAS_HOST_TEXTDOMAIN); ?></p>
+                </td>
+            </tr>
+        <?php
+
+            return;
+        }
+
         $order = new \WC_Order($subscription_id);
         $login_link = SingleLoginService::get_login_link($subscription_id, $order);
-    ?>
+        ?>
         <tr>
             <td colspan="2">
                 <a href='<?php echo $login_link; ?>' target='_blank' class="wpcs-single-login-button">

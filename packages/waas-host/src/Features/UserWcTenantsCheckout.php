@@ -27,7 +27,7 @@ class UserWcTenantsCheckout
         foreach ($items as $key => $item)
         {
             $wpcs_product = new WPCSProduct($item['product_id']);
-            if($wpcs_product->is_wpcs_product())
+            if($wpcs_product->is_wpcs_product() )
             {
                 $base_product_in_cart = true;
                 break;

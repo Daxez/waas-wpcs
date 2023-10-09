@@ -2,6 +2,8 @@
 
 namespace WaaSHost\Integrations\SelfServiceDashboard;
 
+use WaaSHost\Core\WPCSProduct;
+
 class SelfServiceDashboardIntegration
 {
     public static function init()
@@ -37,11 +39,10 @@ class SelfServiceDashboardIntegration
 
     public static function only_show_addons_when_adding_ons($args)
     {
-        $args['tax_query'][] = [
-            'taxonomy' => 'product_cat',
-            'field' => 'slug',
-            'terms' => 'add-on',
-        ];
+        $args['meta_query'][] = array(
+			'key' => WPCSProduct::IS_WPCS_PRODUCT_META,
+			'value' => esc_attr( WPCSProduct::WPCS_PRODUCT_TYPE_ADDON ),
+		);
 
         return $args;
     }
