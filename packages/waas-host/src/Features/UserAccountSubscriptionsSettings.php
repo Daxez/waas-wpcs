@@ -21,6 +21,11 @@ class UserAccountSubscriptionsSettings
 
     public function render_edit_domain($subscription_id)
     {
+        if(!apply_filters('wpcs_display_edit_domain_fields', true, $subscription_id))
+        {
+            return;
+        }
+
         $this->handle_update_subscription_domain($subscription_id);
         $domain_name = get_post_meta($subscription_id, WPCSTenant::WPCS_DOMAIN_NAME_META, true);
         $base_domain_name = get_post_meta($subscription_id, WPCSTenant::WPCS_BASE_DOMAIN_NAME_META, true);

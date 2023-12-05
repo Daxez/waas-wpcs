@@ -115,9 +115,9 @@ class WPCSService
             $payload['phpConstants'] = $args['php_constants'];
         }
 
-        apply_filters('wpcs_tenant_create_payload', $payload);
+        $filtered_payload = apply_filters('wpcs_tenant_create_payload', $payload);
 
-        return $this->httpService->post('/v1/tenants', $payload);
+        return $this->httpService->post('/v1/tenants', $filtered_payload);
     }
 
     public function update_tenant($external_id, $args)
@@ -132,9 +132,9 @@ class WPCSService
             $payload['wpOptions'] = $args['wp_options'];
         }
 
-        apply_filters('wpcs_tenant_update_payload', $payload);
+        $filtered_payload = apply_filters('wpcs_tenant_update_payload', $payload, $external_id);
 
-        return $this->httpService->put('/v1/tenants?externalId=' . $external_id, $payload);
+        return $this->httpService->put('/v1/tenants?externalId=' . $external_id, $filtered_payload);
     }
 
     public function delete_tenant($args)

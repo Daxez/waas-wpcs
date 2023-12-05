@@ -61,7 +61,6 @@ class TenantsSubscriptionManager
         }
 
         $website_name = sanitize_text_field(get_post_meta($order->get_id(), WPCSTenant::WPCS_WEBSITE_NAME_META, true));
-        $password = wp_generate_password();
 
         $keys = EncryptionService::generate_key_pair();
 
@@ -69,7 +68,6 @@ class TenantsSubscriptionManager
             'name' => $website_name,
             'wordpress_username' => SingleLoginService::get_formatted_username($subscription_id),
             'wordpress_email' => $order->get_billing_email(),
-            'wordpress_password' => $password,
             'wordpress_user_role' => get_option(WPCSTenant::WPCS_DEFAULT_USER_ROLE),
             'group_name' => ($group_name === false || empty($group_name)) ? null : $group_name,
             'php_constants' => [
