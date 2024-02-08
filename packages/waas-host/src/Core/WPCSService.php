@@ -99,9 +99,12 @@ class WPCSService
             'name' => $args['name'],
             'wordPressUserName' => $args['wordpress_username'],
             'wordPressUserEmail' => $args['wordpress_email'],
-            'wordPressUserPassword' => $args['wordpress_password'],
             'wordPressUserRole' => $args['wordpress_user_role'],
         ];
+
+        if (isset($args['wordpress_password'])) {
+            $payload['wordPressUserPassword'] = $args['wordpress_password'];
+        }
 
         if (isset($args['custom_domain_name'])) {
             $payload['customDomainName'] = $args['custom_domain_name'];

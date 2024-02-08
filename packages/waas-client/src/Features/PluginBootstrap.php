@@ -14,17 +14,29 @@ class PluginBootstrap
 
     public static function init()
     {
-        if (defined(self::WPCS_TENANT_NO_ADMINISTRATOR_PLUGIN_CAPS) && constant(self::WPCS_TENANT_NO_ADMINISTRATOR_PLUGIN_CAPS) == 'true') {
-            $caps_removed = get_option('WPCS_REMOVED_ADMINISTRATOR_PLUGIN_CAPS', false);
+        $plugins_capabilities = ['activate_plugins', 'delete_plugins', 'install_plugins', 'update_plugins', 'edit_plugins', 'upload_plugins'];
+        $caps_removed = get_option(self::WPCS_REMOVED_ADMINISTRATOR_PLUGIN_CAPS, false);
+        
+        if (defined(self::WPCS_TENANT_NO_ADMINISTRATOR_PLUGIN_CAPS) && constant(self::WPCS_TENANT_NO_ADMINISTRATOR_PLUGIN_CAPS) == 'true' && getenv('WPCS_IS_TENANT') == 'true') {
             if (!$caps_removed) {
                 $role = get_role('administrator');
-                $plugins_capabilities = ['activate_plugins', 'delete_plugins', 'install_plugins', 'update_plugins', 'edit_plugins', 'upload_plugins'];
                 foreach ($plugins_capabilities as $capability) {
                     $role->remove_cap($capability);
                 }
-
-                update_option('WPCS_REMOVED_ADMINISTRATOR_PLUGIN_CAPS', true);
+                
+                update_option(self::WPCS_REMOVED_ADMINISTRATOR_PLUGIN_CAPS, true);
             }
+
+            return;
+        }
+
+        if ($caps_removed) {
+            $role = get_role('administrator');
+            foreach ($plugins_capabilities as $capability) {
+                $role->add_cap($capability);
+            }
+
+            delete_option(self::WPCS_REMOVED_ADMINISTRATOR_PLUGIN_CAPS);
         }
     }
 }
