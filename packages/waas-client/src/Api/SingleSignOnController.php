@@ -74,7 +74,8 @@ class SingleSignOnController
         wp_set_current_user($user->ID);
         wp_set_auth_cookie($user->ID);
         do_action('wp_login', $user->user_login, $user);
-        wp_redirect(admin_url());
+        $redirect_to = apply_filters('wildcloud_sso_admin_url', admin_url(), $user, $data);
+        wp_redirect($redirect_to);
         exit();
     }
 }
