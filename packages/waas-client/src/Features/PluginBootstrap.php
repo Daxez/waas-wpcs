@@ -14,6 +14,11 @@ class PluginBootstrap
 
     public static function init()
     {
+        add_action('init', [__CLASS__, 'set_or_remove_admin_plugin_caps']);
+        add_filter('plugin_action_links', [__CLASS__, 'show_plugins_managed_by_waas_client'], PHP_INT_MAX, 2);
+    }
+
+    public static function set_or_remove_admin_plugin_caps() {
         $plugins_capabilities = ['activate_plugins', 'delete_plugins', 'install_plugins', 'update_plugins', 'edit_plugins', 'upload_plugins'];
         $caps_removed = get_option(self::WPCS_REMOVED_ADMINISTRATOR_PLUGIN_CAPS, false);
         
@@ -38,5 +43,29 @@ class PluginBootstrap
 
             delete_option(self::WPCS_REMOVED_ADMINISTRATOR_PLUGIN_CAPS);
         }
+    }
+
+    public static function show_plugins_managed_by_waas_client($actions, $plugin_file) {
+        // We're not running in a tenant, so show the activation links.
+        if(getenv('WPCS_IS_TENANT') != 'true') {
+            return $actions;
+        }
+
+        // Tenant roles have not been defined, so the WaaS Client won't do anything.
+        if(!defined(self::TENANT_ROLES_CONSTANT)) {
+            return $actions;
+        }
+
+        // The WaaS Client itself should always have the deactivate button available.
+        if($plugin_file === WPCS_WAAS_CLIENT_BASENAME) {
+            return $actions;
+        }
+
+        unset($actions['activate']);
+        unset($actions['deactivate']);
+
+        return array_merge($actions, [
+            'wpcs_active' => is_plugin_active( $plugin_file ) ? __('Activated by the WaaS Client', WPCS_WAAS_CLIENT_TEXTDOMAIN) : __('Deactivated by the WaaS Client', WPCS_WAAS_CLIENT_TEXTDOMAIN),
+        ]);
     }
 }
