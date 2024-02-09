@@ -8,7 +8,7 @@ Plugin Name: WaaS Client
 Plugin URI: https://github.com/Daxez/waas-wpcs
 Description: This plugin is used as counterpart for the WaaS-Host plugin in repository https://github.com/Daxez/waas-wpcs and enables single sign on from the Host as well as enabling/disabling certain plugins as described by the roles settings.
 Author: WPCS
-Version: 2.2.5
+Version: 2.2.6
 Author URI: https://wpcs.io
 Update URI: wpcs-waas-client
 */
@@ -16,7 +16,7 @@ Update URI: wpcs-waas-client
 define( 'WPCS_WAAS_CLIENT_SLUG', 'wpcs-waas-client' );
 define( 'WPCS_WAAS_CLIENT_BASENAME', plugin_basename( __FILE__ ) );
 define( 'WPCS_WAAS_CLIENT_UPDATE_URI', 'wpcs-waas-client' );
-define( 'WPCS_WAAS_CLIENT_VERSION', '2.2.5' );
+define( 'WPCS_WAAS_CLIENT_VERSION', '2.2.6' );
 define( 'WPCS_WAAS_CLIENT_TEXTDOMAIN', 'wpcs-waas-client-textdomain' );
 
 use WaaSClient\Api\SingleSignOnController;
