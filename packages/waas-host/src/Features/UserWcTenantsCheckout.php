@@ -22,6 +22,7 @@ class UserWcTenantsCheckout
     public function render_wpcs_checkout_fields($fields)
     {
         $base_product_in_cart = false;
+        $is_renewal = false;
 
         $items = \WC()->cart->cart_contents;
         foreach ($items as $key => $item)
@@ -29,12 +30,17 @@ class UserWcTenantsCheckout
             $wpcs_product = new WPCSProduct($item['product_id']);
             if($wpcs_product->is_wpcs_product())
             {
+                if(array_key_exists('subscription_renewal', $item))
+                {
+                    $is_renewal = true;
+                }
+
                 $base_product_in_cart = true;
                 break;
             }
         }
 
-        if($base_product_in_cart)
+        if($base_product_in_cart && !$is_renewal)
         {
             $fields['billing'][WPCSTenant::WPCS_WEBSITE_NAME_META] = [
                 'label' => 'Website Name',
